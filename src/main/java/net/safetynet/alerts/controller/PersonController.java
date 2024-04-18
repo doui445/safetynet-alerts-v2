@@ -22,18 +22,7 @@ public class PersonController {
 
     @PutMapping
     public ResponseEntity<Person> updatePerson(@RequestBody Person person) {
-        return personService.getPersonByFirstNameAndLastName(person.getFirstName(), person.getLastName())
-                .map(savedPerson -> {
-                    savedPerson.setAddress(person.getAddress());
-                    savedPerson.setCity(person.getCity());
-                    savedPerson.setZip(person.getZip());
-                    savedPerson.setPhone(person.getPhone());
-                    savedPerson.setEmail(person.getEmail());
-
-                    Person updatedPerson = personService.updatePerson(savedPerson);
-                    return new ResponseEntity<>(updatedPerson, HttpStatus.OK);
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return personService.updatePerson(person);
     }
 
     @DeleteMapping

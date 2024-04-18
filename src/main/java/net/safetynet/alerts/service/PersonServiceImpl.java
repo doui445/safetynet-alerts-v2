@@ -3,6 +3,8 @@ package net.safetynet.alerts.service;
 import lombok.AllArgsConstructor;
 import net.safetynet.alerts.entity.Person;
 import net.safetynet.alerts.repository.PersonRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,8 +35,19 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public Person updatePerson(Person person) {
-        return personRepository.save(person);
+    public ResponseEntity<Person> updatePerson(Person person) {
+        return getPersonByFirstNameAndLastName(person.getFirstName(), person.getLastName())
+                .map(savedPerson -> {
+                    savedPerson.setAddress(person.getAddress());
+                    savedPerson.setCity(person.getCity());
+                    savedPerson.setZip(person.getZip());
+                    savedPerson.setPhone(person.getPhone());
+                    savedPerson.setEmail(person.getEmail());
+
+                    Person updatedPerson = personRepository.save(savedPerson);
+                    return new ResponseEntity<>(updatedPerson, HttpStatus.OK);
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @Override
