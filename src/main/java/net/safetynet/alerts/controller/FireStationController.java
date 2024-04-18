@@ -7,11 +7,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @AllArgsConstructor
 @RequestMapping("/firestation")
 public class FireStationController {
     private FireStationServiceImpl fireStationService;
+
+    @GetMapping
+    public Optional<FireStation> getFirestation(@RequestBody FireStation fireStation) {
+        return fireStationService.getFireStationByStation(fireStation.getStation());
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -21,14 +28,7 @@ public class FireStationController {
 
     @PutMapping
     public ResponseEntity<FireStation> updateFireStation(@RequestBody FireStation fireStation) {
-        return fireStationService.getFireStationByStation(fireStation.getStation())
-                .map(savedFireStation -> {
-                    savedFireStation.setAddress(fireStation.getAddress());
-
-                    FireStation updatedFireStation = fireStationService.updateFireStation(savedFireStation);
-                    return new ResponseEntity<>(updatedFireStation, HttpStatus.OK);
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return fireStationService.updateFireStation(fireStation);
     }
 
     @DeleteMapping("{station}")

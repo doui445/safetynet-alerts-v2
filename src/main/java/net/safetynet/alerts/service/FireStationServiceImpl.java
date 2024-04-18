@@ -3,6 +3,8 @@ package net.safetynet.alerts.service;
 import lombok.AllArgsConstructor;
 import net.safetynet.alerts.entity.FireStation;
 import net.safetynet.alerts.repository.FireStationRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,8 +36,15 @@ public class FireStationServiceImpl implements FireStationService {
     }
 
     @Override
-    public FireStation updateFireStation(FireStation fireStation) {
-        return fireStationRepository.save(fireStation);
+    public ResponseEntity<FireStation> updateFireStation(FireStation fireStation) {
+        return getFireStationByStation(fireStation.getStation())
+                .map(savedFireStation -> {
+                    savedFireStation.setAddress(fireStation.getAddress());
+
+                    FireStation updatedFireStation = fireStationRepository.save(savedFireStation);
+                    return new ResponseEntity<>(updatedFireStation, HttpStatus.OK);
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @Override
