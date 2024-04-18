@@ -21,16 +21,7 @@ public class MedicalRecordController {
 
     @PutMapping
     public ResponseEntity<MedicalRecord> updateMedicalRecord(@RequestBody MedicalRecord medicalRecord) {
-        return medicalRecordService.getMedicalRecordByFirstNameAndLastName(medicalRecord.getFirstName(), medicalRecord.getLastName())
-                .map(savedMedicalRecord -> {
-                    savedMedicalRecord.setBirthdate(medicalRecord.getBirthdate());
-                    savedMedicalRecord.setMedications(medicalRecord.getMedications());
-                    savedMedicalRecord.setAllergies(medicalRecord.getAllergies());
-
-                    MedicalRecord updatedMedicalRecord = medicalRecordService.updateMedicalRecord(savedMedicalRecord);
-                    return new ResponseEntity<>(updatedMedicalRecord, HttpStatus.OK);
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return medicalRecordService.updateMedicalRecord(medicalRecord);
     }
 
     @DeleteMapping

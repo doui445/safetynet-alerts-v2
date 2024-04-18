@@ -3,6 +3,8 @@ package net.safetynet.alerts.service;
 import lombok.AllArgsConstructor;
 import net.safetynet.alerts.entity.MedicalRecord;
 import net.safetynet.alerts.repository.MedicalRecordRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -28,8 +30,17 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
     }
 
     @Override
-    public MedicalRecord updateMedicalRecord(MedicalRecord medicalRecord) {
-        return medicalRecordRepository.save(medicalRecord);
+    public ResponseEntity<MedicalRecord> updateMedicalRecord(MedicalRecord medicalRecord) {
+        return getMedicalRecordByFirstNameAndLastName(medicalRecord.getFirstName(), medicalRecord.getLastName())
+                .map(savedMedicalRecord -> {
+                    savedMedicalRecord.setBirthdate(medicalRecord.getBirthdate());
+                    savedMedicalRecord.setMedications(medicalRecord.getMedications());
+                    savedMedicalRecord.setAllergies(medicalRecord.getAllergies());
+
+                    MedicalRecord updatedMedicalRecord = medicalRecordRepository.save(savedMedicalRecord);
+                    return new ResponseEntity<>(updatedMedicalRecord, HttpStatus.OK);
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @Override
