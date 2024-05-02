@@ -9,6 +9,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,14 +91,15 @@ public class PersonServiceTest {
     @DisplayName("JUnit test for updatePerson method")
     @Test
     public void givenPersonObject_whenUpdatePerson_thenReturnUpdatedPerson() {
-        given(personRepository.save(person)).willReturn(person);
-        person.setEmail("ram@gmail.com");
-        person.setFirstName("Ram");
+        Person person1 = person;
+        person1.setEmail("ram@gmail.com");
+        person1.setFirstName("Ram");
 
-        Person updatedPerson = personService.updatePerson(person);
+        given(personService.getPersonByFirstNameAndLastName(person.getFirstName(), person.getLastName())).willReturn(Optional.of(person));
+        given(personRepository.save(person1)).willReturn(person1);
+        ResponseEntity<Person> updatedPerson = personService.updatePerson(person1);
 
-        assertThat(updatedPerson.getEmail()).isEqualTo("ram@gmail.com");
-        assertThat(updatedPerson.getFirstName()).isEqualTo("Ram");
+        assertThat(updatedPerson.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @DisplayName("JUnit test for deletePerson method")

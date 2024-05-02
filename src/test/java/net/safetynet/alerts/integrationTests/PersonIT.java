@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -78,7 +80,7 @@ public class PersonIT {
                 .build();
 
         given(personService.getPersonByFirstNameAndLastName(person.getFirstName(), person.getLastName())).willReturn(Optional.of(person));
-        Mockito.when(personService.updatePerson(ArgumentMatchers.any())).thenReturn(person1);
+        Mockito.when(personService.updatePerson(ArgumentMatchers.any())).thenReturn(new ResponseEntity<>(person1, HttpStatus.OK));
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             mvc.perform(MockMvcRequestBuilders.put("/person")
@@ -109,7 +111,7 @@ public class PersonIT {
                 .build();
 
         given(personService.getPersonByFirstNameAndLastName(person.getFirstName(), person.getLastName())).willReturn(Optional.empty());
-        Mockito.when(personService.updatePerson(ArgumentMatchers.any())).thenReturn(person1);
+        //Mockito.when(personService.updatePerson(ArgumentMatchers.any())).thenReturn(person1);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             mvc.perform(MockMvcRequestBuilders.put("/person")

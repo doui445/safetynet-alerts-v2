@@ -84,7 +84,7 @@ public class MedicalRecordIT {
                 .build();
 
         given(medicalRecordService.getMedicalRecordByFirstNameAndLastName(medicalRecord.getFirstName(), medicalRecord.getLastName())).willReturn(Optional.of(medicalRecord));
-        Mockito.when(medicalRecordService.updateMedicalRecord(ArgumentMatchers.any())).thenReturn(medicalRecord1);
+        //Mockito.when(medicalRecordService.updateMedicalRecord(ArgumentMatchers.any())).thenReturn(medicalRecord1);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             mvc.perform(MockMvcRequestBuilders.put("/medicalrecord")
@@ -115,7 +115,7 @@ public class MedicalRecordIT {
                 .build();
 
         given(medicalRecordService.getMedicalRecordByFirstNameAndLastName(medicalRecord.getFirstName(), medicalRecord.getLastName())).willReturn(Optional.empty());
-        Mockito.when(medicalRecordService.updateMedicalRecord(ArgumentMatchers.any())).thenReturn(medicalRecord1);
+        //Mockito.when(medicalRecordService.updateMedicalRecord(ArgumentMatchers.any())).thenReturn(medicalRecord1);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             mvc.perform(MockMvcRequestBuilders.put("/medicalrecord")

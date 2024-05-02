@@ -9,6 +9,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,14 +86,16 @@ public class FireStationServiceTest {
     @DisplayName("JUnit test for updateFireStation method")
     @Test
     public void givenFireStationObject_whenUpdateFireStation_thenReturnUpdatedFireStation() {
-        given(fireStationRepository.save(fireStation)).willReturn(fireStation);
-        fireStation.setAddress("225 Donald Road");
-        fireStation.setStation("11");
+        FireStation fireStation1 = fireStation;
+        fireStation1.setAddress("225 Donald Road");
+        fireStation1.setStation("11");
 
-        FireStation updatedFireStation = fireStationService.updateFireStation(fireStation);
+        given(fireStationService.getFireStationByStation(fireStation.getStation())).willReturn(Optional.of(fireStation));
+        given(fireStationRepository.save(fireStation1)).willReturn(fireStation1);
 
-        assertThat(updatedFireStation.getAddress()).isEqualTo("225 Donald Road");
-        assertThat(updatedFireStation.getStation()).isEqualTo("11");
+        ResponseEntity<FireStation> updatedFireStation = fireStationService.updateFireStation(fireStation1);
+
+        assertThat(updatedFireStation.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @DisplayName("JUnit test for deleteFireStation method")

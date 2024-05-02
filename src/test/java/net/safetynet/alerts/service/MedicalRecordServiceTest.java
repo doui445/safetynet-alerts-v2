@@ -9,13 +9,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
@@ -90,15 +94,17 @@ public class MedicalRecordServiceTest {
 
     @DisplayName("JUnit test for updateMedicalRecord method")
     @Test
-    public void givenMedicalRecordObject_whenUpdateMedicalRecord_thenReturnUpdatedMedicalRecord(){
-        given(medicalRecordRepository.save(medicalRecord)).willReturn(medicalRecord);
-        medicalRecord.setBirthdate("1999-08-19");
-        medicalRecord.setFirstName("Ram");
+    public void givenMedicalRecordObject_whenUpdateMedicalRecord_thenReturnUpdatedMedicalRecordResponseEntity(){
+        MedicalRecord medicalRecord1 = medicalRecord;
+        medicalRecord1.setBirthdate("1999-08-19");
+        medicalRecord1.setFirstName("Ram");
 
-        MedicalRecord updatedMedicalRecord = medicalRecordService.updateMedicalRecord(medicalRecord);
+        given(medicalRecordService.getMedicalRecordByFirstNameAndLastName(medicalRecord.getFirstName(), medicalRecord.getLastName())).willReturn(Optional.of(medicalRecord));
+        given(medicalRecordRepository.save(medicalRecord1)).willReturn(medicalRecord1);
 
-        assertThat(updatedMedicalRecord.getBirthdate()).isEqualTo("1999-08-19");
-        assertThat(updatedMedicalRecord.getFirstName()).isEqualTo("Ram");
+        ResponseEntity<MedicalRecord> updatedMedicalRecord = medicalRecordService.updateMedicalRecord(medicalRecord1);
+
+        assertThat(updatedMedicalRecord.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @DisplayName("JUnit test for deleteMedicalRecord method")

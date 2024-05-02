@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -69,7 +70,7 @@ public class FireStationIT {
                 .build();
 
         given(fireStationService.getFireStationByStation(fireStation.getStation())).willReturn(Optional.of(fireStation));
-        Mockito.when(fireStationService.updateFireStation(ArgumentMatchers.any())).thenReturn(fireStation1);
+        //Mockito.when(fireStationService.updateFireStation(ArgumentMatchers.any())).thenReturn(fireStation1);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             mvc.perform(MockMvcRequestBuilders.put("/firestation")
@@ -92,7 +93,7 @@ public class FireStationIT {
                 .build();
 
         given(fireStationService.getFireStationByStation(fireStation.getStation())).willReturn(Optional.empty());
-        Mockito.when(fireStationService.updateFireStation(ArgumentMatchers.any())).thenReturn(fireStation1);
+        //Mockito.when(fireStationService.updateFireStation(ArgumentMatchers.any())).thenReturn(fireStation1);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             mvc.perform(MockMvcRequestBuilders.put("/firestation")
