@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -16,8 +16,8 @@ public class FireStationController {
     private FireStationServiceImpl fireStationService;
 
     @GetMapping
-    public Optional<FireStation> getFirestation(@RequestBody FireStation fireStation) {
-        return fireStationService.getFireStationByStation(fireStation.getStation());
+    public List<FireStation> getFirestation(@RequestParam String station) {
+        return fireStationService.getFireStationByStation(station);
     }
 
     @PostMapping
@@ -33,7 +33,7 @@ public class FireStationController {
 
     @DeleteMapping("{station}")
     public ResponseEntity<String> deleteFireStation(@PathVariable("station") String station) {
-        fireStationService.deleteFireStation(station);
+        fireStationService.deleteFireStationNumber(station);
         return ResponseEntity.status(HttpStatus.OK).body("Fire station " + station + " deleted successfully!");
     }
 }

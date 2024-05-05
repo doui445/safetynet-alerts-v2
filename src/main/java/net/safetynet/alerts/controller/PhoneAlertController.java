@@ -11,12 +11,12 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/phonealert")
+@RequestMapping("/phoneAlert")
 public class PhoneAlertController {
     private FireStationService fireStationService;
 
     @GetMapping
-    public List<String> getPhoneOfPeopleByFirestation(@RequestParam String station) {
-        return fireStationService.getPhoneNumberOfAllPersonsCoveredByStation(station);
+    public List<String> getPhoneOfPeopleByFirestation(@RequestParam String firestation) {
+        return fireStationService.getPhoneNumberOfAllPersonsCoveredByStation(firestation);
     }
 }

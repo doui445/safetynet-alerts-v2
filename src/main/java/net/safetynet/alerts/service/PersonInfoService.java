@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.List;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -19,8 +20,8 @@ public class PersonInfoService {
     private MedicalRecordRepository medicalRecordRepository;
 
     public PersonInfoDTO getPersonInfoByFirstNameAndLastName(String firstName, String lastName) {
-        Optional<Person> optionalPerson = personRepository.findByFirstNameAndLastName(firstName, lastName);
-        Optional<MedicalRecord> optionalMedicalRecord = medicalRecordRepository.findByFirstNameAndLastName(firstName, lastName);
+        Optional<Person> optionalPerson = Optional.ofNullable(personRepository.findByFirstNameEqualsAndLastNameEquals(firstName, lastName));
+        Optional<MedicalRecord> optionalMedicalRecord = Optional.ofNullable(medicalRecordRepository.findByFirstNameEqualsAndLastNameEquals(firstName, lastName));
         PersonInfoDTO personInfo = new PersonInfoDTO();
         if (optionalPerson.isPresent() && optionalMedicalRecord.isPresent()) {
             Person person = optionalPerson.get();

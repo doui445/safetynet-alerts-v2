@@ -21,7 +21,7 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public Person savePerson(Person person) {
-        Optional<Person> savedPerson = personRepository.findByFirstNameAndLastName(person.getFirstName(), person.getLastName());
+        Optional<Person> savedPerson = Optional.ofNullable(personRepository.findByFirstNameEqualsAndLastNameEquals(person.getFirstName(), person.getLastName()));
         if(savedPerson.isPresent()){
             System.out.println("Person already exist with given email:" + person.getEmail());
             return null;
@@ -31,7 +31,7 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public Optional<Person> getPersonByFirstNameAndLastName(String firstName, String lastName) {
-        return personRepository.findByFirstNameAndLastName(firstName, lastName);
+        return Optional.ofNullable(personRepository.findByFirstNameEqualsAndLastNameEquals(firstName, lastName));
     }
 
     @Override
@@ -52,6 +52,6 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public void deletePerson(String firstName, String lastName) {
-        personRepository.deleteByFirstNameAndLastName(firstName, lastName);
+        personRepository.deleteByFirstNameEqualsAndLastNameEquals(firstName, lastName);
     }
 }

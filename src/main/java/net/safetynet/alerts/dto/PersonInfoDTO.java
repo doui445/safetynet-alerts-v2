@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.sql.Blob;
 import java.util.List;
 
 @Setter
@@ -16,6 +17,6 @@ public class PersonInfoDTO {
     private String address;
     private Integer age;
     private String email;
-    private List<String> medications;
-    private List<String> allergies;
+    private Blob medications;
+    private Blob allergies;
 }

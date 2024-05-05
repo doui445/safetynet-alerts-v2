@@ -31,15 +31,14 @@ public class FloodAlertService {
         List<List<Person>> personsInAddressList = new ArrayList<>();
 
         for (String station : stations) {
-            Optional<FireStation> fireStation = fireStationRepository.findByStation(station);
+            Optional<FireStation> fireStation = Optional.ofNullable((FireStation) fireStationRepository.findByStation(station));
             fireStation.ifPresent(value -> addressList.add(value.getAddress()));
         } for (String address : addressList) {
             List<Person> personList = personRepository.findAllByAddress(address);
             for (Person person : personList) {
                 PersonInfoDTO personInfo = new PersonInfoDTO();
-                Optional<MedicalRecord> optionalMedicalRecord = medicalRecordRepository.findByFirstNameAndLastName(person.getFirstName(), person.getLastName());
-                if (optionalMedicalRecord.isPresent()) {
-                    MedicalRecord medicalRecord = optionalMedicalRecord.get();
+                MedicalRecord medicalRecord = medicalRecordRepository.findByFirstNameEqualsAndLastNameEquals(person.getFirstName(), person.getLastName());
+                if (medicalRecord != null) {
                     LocalDate birthdate = LocalDate.parse(medicalRecord.getBirthdate());
                     personInfo.setLastName(personInfo.getLastName());
                     personInfo.setAddress(person.getAddress());

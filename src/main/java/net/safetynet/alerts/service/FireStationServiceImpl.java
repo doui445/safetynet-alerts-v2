@@ -22,22 +22,27 @@ public class FireStationServiceImpl implements FireStationService {
 
     @Override
     public FireStation saveFireStation(FireStation fireStation) {
-        Optional<FireStation> savedFireStation = fireStationRepository.findByStation(fireStation.getStation());
-        if(savedFireStation.isPresent()){
-            System.out.println("FireStation already exist with given address:" + fireStation.getAddress());
+        List<FireStation> fireStations = fireStationRepository.findByStation(fireStation.getStation());
+        for (FireStation savedFireStation: fireStations) {
+            System.out.println("FireStation already exist with given address:" + savedFireStation.getAddress());
             return null;
         }
         return fireStationRepository.save(fireStation);
     }
 
     @Override
-    public Optional<FireStation> getFireStationByStation(String station) {
+    public List<FireStation> getFireStationByStation(String station) {
         return fireStationRepository.findByStation(station);
     }
 
     @Override
+    public Optional<FireStation> getFireStationById(Long id) {
+        return fireStationRepository.findById(id);
+    }
+
+    @Override
     public ResponseEntity<FireStation> updateFireStation(FireStation fireStation) {
-        return getFireStationByStation(fireStation.getStation())
+        return getFireStationById(fireStation.getId())
                 .map(savedFireStation -> {
                     savedFireStation.setAddress(fireStation.getAddress());
 
@@ -48,7 +53,7 @@ public class FireStationServiceImpl implements FireStationService {
     }
 
     @Override
-    public void deleteFireStation(String station) {
-        fireStationRepository.deleteByStation(station);
+    public void deleteFireStationNumber(String station) {
+        fireStationRepository.deleteByStationEquals(station);
     }
 }

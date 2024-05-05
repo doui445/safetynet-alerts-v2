@@ -3,7 +3,7 @@ package net.safetynet.alerts.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
+import java.sql.Blob;
 
 @Setter
 @Getter
@@ -25,6 +25,8 @@ public class MedicalRecord {
     private String lastName;
 
     private String birthdate;
-    private List<String> medications;
-    private List<String> allergies;
+    @SuppressWarnings("JpaAttributeTypeInspection")
+    private Blob medications;
+    @SuppressWarnings("JpaAttributeTypeInspection")
+    private Blob allergies;
 }

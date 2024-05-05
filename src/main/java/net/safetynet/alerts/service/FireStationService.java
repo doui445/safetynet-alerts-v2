@@ -9,11 +9,13 @@ import java.util.Optional;
 public interface FireStationService {
     FireStation saveFireStation(FireStation fireStation);
 
-    Optional<FireStation> getFireStationByStation(String station);
+    List<FireStation> getFireStationByStation(String station);
+
+    Optional<FireStation> getFireStationById(Long id);
 
     ResponseEntity<FireStation> updateFireStation(FireStation fireStation);
 
-    void deleteFireStation(String station);
+    void deleteFireStationNumber(String station);
 
     List<String> getPhoneNumberOfAllPersonsCoveredByStation(String station);
 }

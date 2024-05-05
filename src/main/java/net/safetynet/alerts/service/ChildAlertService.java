@@ -13,7 +13,6 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -25,9 +24,8 @@ public class ChildAlertService {
         List<Person> people = personRepository.findAllByAddress(address);
         List<ChildAlertDTO> childAlertDTOList = new ArrayList<>();
         for (Person person : people) {
-            Optional<MedicalRecord> optionalMedicalRecord = medicalRecordRepository.findByFirstNameAndLastName(person.getFirstName(), person.getLastName());
-            if (optionalMedicalRecord.isPresent()) {
-                MedicalRecord medicalRecord = optionalMedicalRecord.get();
+            MedicalRecord medicalRecord = medicalRecordRepository.findByFirstNameEqualsAndLastNameEquals(person.getFirstName(), person.getLastName());
+            if (medicalRecord != null) {
                 LocalDate birthdate = LocalDate.parse(medicalRecord.getBirthdate());
                 int age = Period.between(birthdate, LocalDate.now()).getYears();
                 if (age < 18) {

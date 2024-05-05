@@ -25,10 +25,10 @@ public class FireAlertService {
 
     public List<FireAlertDTO> getFireStationAndPersonsByAddress(String address) {
         List<Person> people = personRepository.findAllByAddress(address);
-        FireStation fireStation = fireStationRepository.findByAddress(address);
+        FireStation fireStation = fireStationRepository.findByAddressEquals(address);
         List<FireAlertDTO> fireAlertDTOList = new ArrayList<>();
         for (Person person : people) {
-            Optional<MedicalRecord> optionalMedicalRecord = medicalRecordRepository.findByFirstNameAndLastName(person.getFirstName(), person.getLastName());
+            Optional<MedicalRecord> optionalMedicalRecord = Optional.ofNullable(medicalRecordRepository.findByFirstNameEqualsAndLastNameEquals(person.getFirstName(), person.getLastName()));
             if (optionalMedicalRecord.isPresent()) {
                 MedicalRecord medicalRecord = optionalMedicalRecord.get();
                 LocalDate birthdate = LocalDate.parse(medicalRecord.getBirthdate());

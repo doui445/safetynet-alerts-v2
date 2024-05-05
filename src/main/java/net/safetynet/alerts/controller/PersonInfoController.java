@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/personinfo")
+@RequestMapping("/personInfo")
 public class PersonInfoController {
     private PersonInfoService personInfoService;
 

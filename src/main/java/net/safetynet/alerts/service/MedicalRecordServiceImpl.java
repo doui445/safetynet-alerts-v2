@@ -16,8 +16,8 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
 
     @Override
     public MedicalRecord saveMedicalRecord(MedicalRecord medicalRecord) {
-        Optional<MedicalRecord> savedMedicalRecord = medicalRecordRepository.findByFirstNameAndLastName(medicalRecord.getFirstName(), medicalRecord.getLastName());
-        if(savedMedicalRecord.isPresent()){
+        MedicalRecord savedMedicalRecord = medicalRecordRepository.findByFirstNameEqualsAndLastNameEquals(medicalRecord.getFirstName(), medicalRecord.getLastName());
+        if(savedMedicalRecord != null){
             System.out.println("MedicalRecord already exist with given birthdate:" + medicalRecord.getBirthdate());
             return null;
         }
@@ -26,7 +26,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
 
     @Override
     public Optional<MedicalRecord> getMedicalRecordByFirstNameAndLastName(String firstName, String lastName) {
-        return medicalRecordRepository.findByFirstNameAndLastName(firstName, lastName);
+        return Optional.ofNullable(medicalRecordRepository.findByFirstNameEqualsAndLastNameEquals(firstName, lastName));
     }
 
     @Override
@@ -45,6 +45,6 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
 
     @Override
     public void deleteMedicalRecord(String firstName, String lastName) {
-        medicalRecordRepository.deleteByFirstNameAndLastName(firstName, lastName);
+        medicalRecordRepository.deleteByLastNameEqualsAndFirstNameEquals(firstName, lastName);
     }
 }
