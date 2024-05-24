@@ -16,7 +16,7 @@ import java.util.List;
 public class FloodAlertController {
     private FloodAlertService floodAlertService;
 
-    @GetMapping("/flood/stations")
+    @GetMapping("/stations")
     public List<FloodAlertDTO> getAddressAndPeopleByFloodStations(@RequestParam List<String> stations) {
         return floodAlertService.getAddressAndPeopleByFloodStations(stations);
     }

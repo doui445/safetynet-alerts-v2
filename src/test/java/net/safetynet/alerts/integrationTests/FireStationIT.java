@@ -17,9 +17,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.Optional;
+import java.util.ArrayList;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -68,8 +67,10 @@ public class FireStationIT {
                 .address("225 Donald Road")
                 .station("10")
                 .build();
+        ArrayList<FireStation> fireStations = new ArrayList<>();
+        fireStations.add(fireStation);
 
-        given(fireStationService.getFireStationByStation(fireStation.getStation())).willReturn(Optional.of(fireStation));
+        given(fireStationService.getFireStationByStation(fireStation.getStation())).willReturn(fireStations);
         //Mockito.when(fireStationService.updateFireStation(ArgumentMatchers.any())).thenReturn(fireStation1);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -92,7 +93,7 @@ public class FireStationIT {
                 .station("10")
                 .build();
 
-        given(fireStationService.getFireStationByStation(fireStation.getStation())).willReturn(Optional.empty());
+        given(fireStationService.getFireStationByStation(fireStation.getStation())).willReturn(new ArrayList<>());
         //Mockito.when(fireStationService.updateFireStation(ArgumentMatchers.any())).thenReturn(fireStation1);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -108,7 +109,7 @@ public class FireStationIT {
     @DisplayName("JUnit test for delete fire station REST API")
     @Test
     public void givenFireStationObject_whenDeleteFireStation_thenReturn200() {
-        doNothing().when(fireStationService).deleteFireStation(fireStation.getStation());
+        doNothing().when(fireStationService).deleteFireStationNumber(fireStation.getStation());
         try {
             mvc.perform(MockMvcRequestBuilders.delete("/firestation/10")).andExpect(status().isOk());
         } catch (Exception e) {

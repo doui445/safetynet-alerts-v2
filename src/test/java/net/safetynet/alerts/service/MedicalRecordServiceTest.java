@@ -12,12 +12,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import javax.sql.rowset.serial.SerialBlob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.h2.mvstore.type.ObjectDataType.serialize;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -41,20 +43,24 @@ public class MedicalRecordServiceTest {
         medications.add("pharmacol:5000mg");
         List<String> allergies = new ArrayList<>();
         allergies.add("nillacilan");
-        medicalRecord = MedicalRecord.builder()
-                .firstName("Steve")
-                .lastName("Lander")
-                .birthdate("2000-01-01")
-                .medications(medications)
-                .allergies(allergies)
-                .build();
+        try {
+            medicalRecord = MedicalRecord.builder()
+                    .firstName("Steve")
+                    .lastName("Lander")
+                    .birthdate("2000-01-01")
+                    .medications(new SerialBlob(serialize(medications)))
+                    .allergies(new SerialBlob(serialize(allergies)))
+                    .build();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @DisplayName("JUnit test for saveMedicalRecord method")
     @Test
     public void givenMedicalRecordObject_whenSaveMedicalRecord_thenReturnMedicalRecordObject(){
-        given(medicalRecordRepository.findByFirstNameAndLastName(medicalRecord.getFirstName(), medicalRecord.getLastName()))
-                .willReturn(Optional.empty());
+        given(medicalRecordRepository.findByFirstNameEqualsAndLastNameEquals(medicalRecord.getFirstName(), medicalRecord.getLastName()))
+                .willReturn(null);
 
         given(medicalRecordRepository.save(medicalRecord)).willReturn(medicalRecord);
 
@@ -70,8 +76,8 @@ public class MedicalRecordServiceTest {
     @DisplayName("JUnit test for saveMedicalRecord method which throws exception")
     @Test
     public void givenExistingMedicalRecord_whenSaveMedicalRecord_thenReturnNull(){
-        given(medicalRecordRepository.findByFirstNameAndLastName(medicalRecord.getFirstName(), medicalRecord.getLastName()))
-                .willReturn(Optional.of(medicalRecord));
+        given(medicalRecordRepository.findByFirstNameEqualsAndLastNameEquals(medicalRecord.getFirstName(), medicalRecord.getLastName()))
+                .willReturn(medicalRecord);
 
         System.out.println(medicalRecordRepository);
         System.out.println(medicalRecordService);
@@ -84,8 +90,8 @@ public class MedicalRecordServiceTest {
     @DisplayName("JUnit test for getMedicalRecordByFirstNameAndLastName method")
     @Test
     public void givenMedicalRecordFirstNameAndLastName_whenGetMedicalRecordByFirstNameAndLastName_thenReturnMedicalRecordObject() {
-        given(medicalRecordRepository.findByFirstNameAndLastName(medicalRecord.getFirstName(), medicalRecord.getLastName()))
-                .willReturn(Optional.of(medicalRecord));
+        given(medicalRecordRepository.findByFirstNameEqualsAndLastNameEquals(medicalRecord.getFirstName(), medicalRecord.getLastName()))
+                .willReturn(medicalRecord);
 
         MedicalRecord returnedMedicalRecord = medicalRecordService.getMedicalRecordByFirstNameAndLastName(medicalRecord.getFirstName(), medicalRecord.getLastName()).get();
 
@@ -99,8 +105,7 @@ public class MedicalRecordServiceTest {
         medicalRecord1.setBirthdate("1999-08-19");
         medicalRecord1.setFirstName("Ram");
 
-        given(medicalRecordService.getMedicalRecordByFirstNameAndLastName(medicalRecord.getFirstName(), medicalRecord.getLastName())).willReturn(Optional.of(medicalRecord));
-        given(medicalRecordRepository.save(medicalRecord1)).willReturn(medicalRecord1);
+        given(medicalRecordRepository.findByFirstNameEqualsAndLastNameEquals(medicalRecord.getFirstName(), medicalRecord.getLastName())).willReturn(medicalRecord);
 
         ResponseEntity<MedicalRecord> updatedMedicalRecord = medicalRecordService.updateMedicalRecord(medicalRecord1);
 
@@ -113,10 +118,10 @@ public class MedicalRecordServiceTest {
         String medicalRecordFirstName = "Steve";
         String medicalRecordLastName = "Lander";
 
-        willDoNothing().given(medicalRecordRepository).deleteByFirstNameAndLastName(medicalRecordFirstName, medicalRecordLastName);
+        willDoNothing().given(medicalRecordRepository).deleteByLastNameEqualsAndFirstNameEquals(medicalRecordFirstName, medicalRecordLastName);
 
         medicalRecordService.deleteMedicalRecord(medicalRecordFirstName, medicalRecordLastName);
 
-        verify(medicalRecordRepository, times(1)).deleteByFirstNameAndLastName(medicalRecordFirstName, medicalRecordLastName);
+        verify(medicalRecordRepository, times(1)).deleteByLastNameEqualsAndFirstNameEquals(medicalRecordFirstName, medicalRecordLastName);
     }
 }

@@ -45,7 +45,7 @@ public class FireStationServiceTest {
     @Test
     public void givenFireStationObject_whenSaveFireStation_thenReturnFireStationObject() {
         given(fireStationRepository.findByStation(fireStation.getStation()))
-                .willReturn(Optional.empty());
+                .willReturn(new ArrayList<>());
 
         given(fireStationRepository.save(fireStation)).willReturn(fireStation);
 
@@ -62,7 +62,7 @@ public class FireStationServiceTest {
     @Test
     public void givenExistingFireStation_whenSaveFireStation_thenReturnNull() {
         given(fireStationRepository.findByStation(fireStation.getStation()))
-                .willReturn(Optional.of(fireStation));
+                .willReturn(List.of(fireStation));
 
         System.out.println(fireStationRepository);
         System.out.println(fireStationService);
@@ -76,9 +76,9 @@ public class FireStationServiceTest {
     @Test
     public void givenFireStationStation_whenGetFireStationByStation_thenReturnFireStationObject() {
         given(fireStationRepository.findByStation(fireStation.getStation()))
-                .willReturn(Optional.of(fireStation));
+                .willReturn(List.of(fireStation));
 
-        FireStation returnedFireStation = fireStationService.getFireStationByStation(fireStation.getStation()).get();
+        FireStation returnedFireStation = fireStationService.getFireStationByStation(fireStation.getStation()).getFirst();
 
         assertThat(returnedFireStation).isNotNull();
     }
@@ -87,11 +87,11 @@ public class FireStationServiceTest {
     @Test
     public void givenFireStationObject_whenUpdateFireStation_thenReturnUpdatedFireStation() {
         FireStation fireStation1 = fireStation;
+        fireStation1.setId(20L);
         fireStation1.setAddress("225 Donald Road");
         fireStation1.setStation("11");
 
-        given(fireStationService.getFireStationByStation(fireStation.getStation())).willReturn(Optional.of(fireStation));
-        given(fireStationRepository.save(fireStation1)).willReturn(fireStation1);
+        given(fireStationRepository.findById(fireStation1.getId())).willReturn(Optional.of(fireStation1));
 
         ResponseEntity<FireStation> updatedFireStation = fireStationService.updateFireStation(fireStation1);
 
@@ -103,11 +103,11 @@ public class FireStationServiceTest {
     public void givenFireStationId_whenDeleteFireStation_thenNothing() {
         String fireStationStation = "10";
 
-        willDoNothing().given(fireStationRepository).deleteByStation(fireStationStation);
+        willDoNothing().given(fireStationRepository).deleteByStationEquals(fireStationStation);
 
-        fireStationService.deleteFireStation(fireStationStation);
+        fireStationService.deleteFireStationNumber(fireStationStation);
 
-        verify(fireStationRepository, times(1)).deleteByStation(fireStationStation);
+        verify(fireStationRepository, times(1)).deleteByStationEquals(fireStationStation);
     }
 
     @DisplayName("JUnit test for getPhoneNumberOfAllPersonsCoveredByStation method")

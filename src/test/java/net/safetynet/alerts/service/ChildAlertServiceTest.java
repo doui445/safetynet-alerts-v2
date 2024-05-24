@@ -13,11 +13,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.sql.rowset.serial.SerialBlob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.h2.mvstore.type.ObjectDataType.serialize;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,13 +52,17 @@ public class ChildAlertServiceTest {
         medications.add("pharmacol:5000mg");
         List<String> allergies = new ArrayList<>();
         allergies.add("nillacilan");
-        medicalRecord = MedicalRecord.builder()
-                .firstName("Steve")
-                .lastName("Lander")
-                .birthdate("2000-01-01")
-                .medications(medications)
-                .allergies(allergies)
-                .build();
+        try {
+            medicalRecord = MedicalRecord.builder()
+                    .firstName("Steve")
+                    .lastName("Lander")
+                    .birthdate("2000-01-01")
+                    .medications(new SerialBlob(serialize(medications)))
+                    .allergies(new SerialBlob(serialize(allergies)))
+                    .build();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @DisplayName("JUnit test for getAllChildLivingAtAddress method")
@@ -66,7 +72,7 @@ public class ChildAlertServiceTest {
         persons.add(person);
 
         given(personRepository.findAllByAddress(person.getAddress())).willReturn(persons);
-        given(medicalRecordRepository.findByFirstNameAndLastName(person.getFirstName(), person.getLastName())).willReturn(Optional.of(medicalRecord));
+        given(medicalRecordRepository.findByFirstNameEqualsAndLastNameEquals(person.getFirstName(), person.getLastName())).willReturn(medicalRecord);
 
         List<ChildAlertDTO> childAlertDTOList = childAlertService.getAllChildLivingAtAddress("123 Donald Avenue");
 
@@ -81,7 +87,7 @@ public class ChildAlertServiceTest {
         medicalRecord.setBirthdate("2012-01-01");
 
         given(personRepository.findAllByAddress(person.getAddress())).willReturn(persons);
-        given(medicalRecordRepository.findByFirstNameAndLastName(person.getFirstName(), person.getLastName())).willReturn(Optional.of(medicalRecord));
+        given(medicalRecordRepository.findByFirstNameEqualsAndLastNameEquals(person.getFirstName(), person.getLastName())).willReturn(medicalRecord);
 
         List<ChildAlertDTO> childAlertDTOList = childAlertService.getAllChildLivingAtAddress("123 Donald Avenue");
 

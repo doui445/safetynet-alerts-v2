@@ -31,7 +31,7 @@ public class FloodAlertService {
         List<List<Person>> personsInAddressList = new ArrayList<>();
 
         for (String station : stations) {
-            Optional<FireStation> fireStation = Optional.ofNullable((FireStation) fireStationRepository.findByStation(station));
+            Optional<FireStation> fireStation = Optional.ofNullable(fireStationRepository.findByStation(station).getFirst());
             fireStation.ifPresent(value -> addressList.add(value.getAddress()));
         } for (String address : addressList) {
             List<Person> personList = personRepository.findAllByAddress(address);

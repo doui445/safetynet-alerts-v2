@@ -17,10 +17,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import javax.sql.rowset.serial.SerialBlob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.h2.mvstore.type.ObjectDataType.serialize;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -42,13 +45,17 @@ public class MedicalRecordIT {
         medications.add("pharmacol:5000mg");
         List<String> allergies = new ArrayList<>();
         allergies.add("nillacilan");
-        medicalRecord = MedicalRecord.builder()
-                .firstName("Steve")
-                .lastName("Lander")
-                .birthdate("2000-01-01")
-                .medications(medications)
-                .allergies(allergies)
-                .build();
+        try {
+            medicalRecord = MedicalRecord.builder()
+                    .firstName("Steve")
+                    .lastName("Lander")
+                    .birthdate("2000-01-01")
+                    .medications(new SerialBlob(serialize(medications)))
+                    .allergies(new SerialBlob(serialize(allergies)))
+                    .build();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @DisplayName("JUnit test for create medical record REST API")
@@ -75,13 +82,18 @@ public class MedicalRecordIT {
         medications.add("pharmacol:5000mg");
         List<String> allergies = new ArrayList<>();
         allergies.add("nillacilan");
-        MedicalRecord medicalRecord1 = MedicalRecord.builder()
-                .firstName("Steve")
-                .lastName("Lander")
-                .birthdate("1999-08-19")
-                .medications(medications)
-                .allergies(allergies)
-                .build();
+        MedicalRecord medicalRecord1;
+        try {
+            medicalRecord1 = MedicalRecord.builder()
+                    .firstName("Steve")
+                    .lastName("Lander")
+                    .birthdate("1999-08-19")
+                    .medications(new SerialBlob(serialize(medications)))
+                    .allergies(new SerialBlob(serialize(allergies)))
+                    .build();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
         given(medicalRecordService.getMedicalRecordByFirstNameAndLastName(medicalRecord.getFirstName(), medicalRecord.getLastName())).willReturn(Optional.of(medicalRecord));
         //Mockito.when(medicalRecordService.updateMedicalRecord(ArgumentMatchers.any())).thenReturn(medicalRecord1);
@@ -106,13 +118,18 @@ public class MedicalRecordIT {
         medications.add("pharmacol:5000mg");
         List<String> allergies = new ArrayList<>();
         allergies.add("nillacilan");
-        MedicalRecord medicalRecord1 = MedicalRecord.builder()
-                .firstName("Steve")
-                .lastName("Lander")
-                .birthdate("2000-01-01")
-                .medications(medications)
-                .allergies(allergies)
-                .build();
+        MedicalRecord medicalRecord1;
+        try {
+            medicalRecord1 = MedicalRecord.builder()
+                    .firstName("Steve")
+                    .lastName("Lander")
+                    .birthdate("2000-01-01")
+                    .medications(new SerialBlob(serialize(medications)))
+                    .allergies(new SerialBlob(serialize(allergies)))
+                    .build();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
         given(medicalRecordService.getMedicalRecordByFirstNameAndLastName(medicalRecord.getFirstName(), medicalRecord.getLastName())).willReturn(Optional.empty());
         //Mockito.when(medicalRecordService.updateMedicalRecord(ArgumentMatchers.any())).thenReturn(medicalRecord1);

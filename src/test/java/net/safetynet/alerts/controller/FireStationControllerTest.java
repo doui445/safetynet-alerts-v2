@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Optional;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -40,9 +40,9 @@ public class FireStationControllerTest {
     @Test
     public void givenFireStationObject_whenGetFirestation_thenReturnOptionalOfFirestationObject() {
         given(fireStationService.getFireStationByStation(fireStation.getStation()))
-                .willReturn(Optional.of(fireStation));
-        Optional<FireStation> fireStation1 = fireStationController.getFirestation(fireStation);
-        assertThat(fireStation1.isPresent()).isTrue();
+                .willReturn(List.of(fireStation));
+        List<FireStation> fireStations = fireStationController.getFirestation(fireStation.getStation());
+        assertThat(fireStations.isEmpty()).isFalse();
     }
 
     @DisplayName("JUnit test for createFireStation method")
@@ -67,7 +67,7 @@ public class FireStationControllerTest {
     @DisplayName("JUnit test for deleteFireStation method")
     @Test
     public void givenFireStationObject_whenDeleteFireStation_thenReturnResponseEntityOK() {
-        doNothing().when(fireStationService).deleteFireStation(fireStation.getStation());
+        doNothing().when(fireStationService).deleteFireStationNumber(fireStation.getStation());
         ResponseEntity<String> isDeleted = fireStationController.deleteFireStation(fireStation.getStation());
         assertThat(isDeleted.getStatusCode()).isEqualTo(HttpStatus.OK);
     }

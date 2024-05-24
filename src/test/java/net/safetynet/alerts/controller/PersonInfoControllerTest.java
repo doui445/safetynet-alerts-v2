@@ -1,9 +1,7 @@
 package net.safetynet.alerts.controller;
 
-import net.safetynet.alerts.dto.ChildAlertDTO;
 import net.safetynet.alerts.dto.PersonInfoDTO;
 import net.safetynet.alerts.entity.Person;
-import net.safetynet.alerts.service.ChildAlertService;
 import net.safetynet.alerts.service.PersonInfoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

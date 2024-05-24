@@ -12,10 +12,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import javax.sql.rowset.serial.SerialBlob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.h2.mvstore.type.ObjectDataType.serialize;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 
@@ -35,13 +38,17 @@ public class MedicalRecordControllerTest {
         medications.add("pharmacol:5000mg");
         List<String> allergies = new ArrayList<>();
         allergies.add("nillacilan");
-        medicalRecord = MedicalRecord.builder()
-                .firstName("Steve")
-                .lastName("Lander")
-                .birthdate("2000-01-01")
-                .medications(medications)
-                .allergies(allergies)
-                .build();
+        try {
+            medicalRecord = MedicalRecord.builder()
+                    .firstName("Steve")
+                    .lastName("Lander")
+                    .birthdate("2000-01-01")
+                    .medications(new SerialBlob(serialize(medications)))
+                    .allergies(new SerialBlob(serialize(allergies)))
+                    .build();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @DisplayName("JUnit test for createMedicalRecord method")

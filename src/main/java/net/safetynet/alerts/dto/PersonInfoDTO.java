@@ -1,5 +1,6 @@
 package net.safetynet.alerts.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(value = { "medications", "allergies" })
 public class PersonInfoDTO {
     private String lastName;
     private String address;

@@ -49,8 +49,8 @@ public class PersonServiceTest {
     @DisplayName("JUnit test for savePerson method")
     @Test
     public void givenPersonObject_whenSavePerson_thenReturnPersonObject() {
-        given(personRepository.findByFirstNameAndLastName(person.getFirstName(), person.getLastName()))
-                .willReturn(Optional.empty());
+        given(personRepository.findByFirstNameEqualsAndLastNameEquals(person.getFirstName(), person.getLastName()))
+                .willReturn(null);
 
         given(personRepository.save(person)).willReturn(person);
 
@@ -66,8 +66,8 @@ public class PersonServiceTest {
     @DisplayName("JUnit test for savePerson method which throws exception")
     @Test
     public void givenExistingPerson_whenSavePerson_thenReturnNull() {
-        given(personRepository.findByFirstNameAndLastName(person.getFirstName(), person.getLastName()))
-                .willReturn(Optional.of(person));
+        given(personRepository.findByFirstNameEqualsAndLastNameEquals(person.getFirstName(), person.getLastName()))
+                .willReturn(person);
 
         System.out.println(personRepository);
         System.out.println(personService);
@@ -80,8 +80,8 @@ public class PersonServiceTest {
     @DisplayName("JUnit test for getPersonByFirstNameAndLastName method")
     @Test
     public void givenPersonFirstNameAndLastName_whenGetPersonByFirstNameAndLastName_thenReturnPersonObject() {
-        given(personRepository.findByFirstNameAndLastName(person.getFirstName(), person.getLastName()))
-                .willReturn(Optional.of(person));
+        given(personRepository.findByFirstNameEqualsAndLastNameEquals(person.getFirstName(), person.getLastName()))
+                .willReturn(person);
 
         Person returnedPerson = personService.getPersonByFirstNameAndLastName(person.getFirstName(), person.getLastName()).get();
 
@@ -95,8 +95,7 @@ public class PersonServiceTest {
         person1.setEmail("ram@gmail.com");
         person1.setFirstName("Ram");
 
-        given(personService.getPersonByFirstNameAndLastName(person.getFirstName(), person.getLastName())).willReturn(Optional.of(person));
-        given(personRepository.save(person1)).willReturn(person1);
+        given(personRepository.findByFirstNameEqualsAndLastNameEquals(person.getFirstName(), person.getLastName())).willReturn(person);
         ResponseEntity<Person> updatedPerson = personService.updatePerson(person1);
 
         assertThat(updatedPerson.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -108,11 +107,11 @@ public class PersonServiceTest {
         String personFirstName = "Steve";
         String personLastName = "Lander";
 
-        willDoNothing().given(personRepository).deleteByFirstNameAndLastName(personFirstName, personLastName);
+        willDoNothing().given(personRepository).deleteByFirstNameEqualsAndLastNameEquals(personFirstName, personLastName);
 
         personService.deletePerson(personFirstName, personLastName);
 
-        verify(personRepository, times(1)).deleteByFirstNameAndLastName(personFirstName, personLastName);
+        verify(personRepository, times(1)).deleteByFirstNameEqualsAndLastNameEquals(personFirstName, personLastName);
     }
 
     @DisplayName("JUnit test for getEmailForAllPersonsInCity method")

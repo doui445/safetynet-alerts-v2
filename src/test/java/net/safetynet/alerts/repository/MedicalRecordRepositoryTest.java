@@ -7,11 +7,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import javax.sql.rowset.serial.SerialBlob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.h2.mvstore.type.ObjectDataType.serialize;
 
 @DataJpaTest
 public class MedicalRecordRepositoryTest {
@@ -26,13 +29,17 @@ public class MedicalRecordRepositoryTest {
         medications.add("pharmacol:5000mg");
         List<String> allergies = new ArrayList<>();
         allergies.add("nillacilan");
-        medicalRecord = MedicalRecord.builder()
-                .firstName("John")
-                .lastName("Boyd")
-                .birthdate("2000-01-01")
-                .medications(medications)
-                .allergies(allergies)
-                .build();
+        try {
+            medicalRecord = MedicalRecord.builder()
+                    .firstName("John")
+                    .lastName("Boyd")
+                    .birthdate("2000-01-01")
+                    .medications(new SerialBlob(serialize(medications)))
+                    .allergies(new SerialBlob(serialize(allergies)))
+                    .build();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @DisplayName("JUnit test for save medical record operation")
@@ -42,13 +49,18 @@ public class MedicalRecordRepositoryTest {
         medications.add("pharmacol:5000mg");
         List<String> allergies = new ArrayList<>();
         allergies.add("nillacilan");
-        MedicalRecord medicalRecord = MedicalRecord.builder()
-                .firstName("John")
-                .lastName("Boyd")
-                .birthdate("2000-01-01")
-                .medications(medications)
-                .allergies(allergies)
-                .build();
+        MedicalRecord medicalRecord;
+        try {
+            medicalRecord = MedicalRecord.builder()
+                    .firstName("John")
+                    .lastName("Boyd")
+                    .birthdate("2000-01-01")
+                    .medications(new SerialBlob(serialize(medications)))
+                    .allergies(new SerialBlob(serialize(allergies)))
+                    .build();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         MedicalRecord savedMedicalRecord = medicalRecordRepository.save(medicalRecord);
         assertThat(savedMedicalRecord).isNotNull();
         assertThat(savedMedicalRecord.getId()).isGreaterThan(0);
@@ -62,13 +74,18 @@ public class MedicalRecordRepositoryTest {
         medications.add("pharmacol:5000mg");
         List<String> allergies = new ArrayList<>();
         allergies.add("nillacilan");
-        MedicalRecord medicalRecord1 = MedicalRecord.builder()
-                .firstName("Peter")
-                .lastName("Duncan")
-                .birthdate("1999-08-19")
-                .medications(medications)
-                .allergies(allergies)
-                .build();
+        MedicalRecord medicalRecord1;
+        try {
+            medicalRecord1 = MedicalRecord.builder()
+                    .firstName("Peter")
+                    .lastName("Duncan")
+                    .birthdate("1999-08-19")
+                    .medications(new SerialBlob(serialize(medications)))
+                    .allergies(new SerialBlob(serialize(allergies)))
+                    .build();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         medicalRecordRepository.save(medicalRecord);
         medicalRecordRepository.save(medicalRecord1);
 

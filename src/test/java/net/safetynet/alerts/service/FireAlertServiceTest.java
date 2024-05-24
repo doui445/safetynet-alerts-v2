@@ -15,11 +15,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.sql.rowset.serial.SerialBlob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.h2.mvstore.type.ObjectDataType.serialize;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -56,13 +58,17 @@ public class FireAlertServiceTest {
         medications.add("pharmacol:5000mg");
         List<String> allergies = new ArrayList<>();
         allergies.add("nillacilan");
-        medicalRecord = MedicalRecord.builder()
-                .firstName("Steve")
-                .lastName("Lander")
-                .birthdate("2000-01-01")
-                .medications(medications)
-                .allergies(allergies)
-                .build();
+        try {
+            medicalRecord = MedicalRecord.builder()
+                    .firstName("Steve")
+                    .lastName("Lander")
+                    .birthdate("2000-01-01")
+                    .medications(new SerialBlob(serialize(medications)))
+                    .allergies(new SerialBlob(serialize(allergies)))
+                    .build();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
         fireStation = FireStation.builder()
                 .address("123 Donald Avenue")
@@ -77,8 +83,8 @@ public class FireAlertServiceTest {
         persons.add(person);
 
         given(personRepository.findAllByAddress(person.getAddress())).willReturn(persons);
-        given(fireStationRepository.findByAddress(person.getAddress())).willReturn((fireStation));
-        given(medicalRecordRepository.findByFirstNameAndLastName(person.getFirstName(), person.getLastName())).willReturn(Optional.of(medicalRecord));
+        given(fireStationRepository.findByAddressEquals(person.getAddress())).willReturn((fireStation));
+        given(medicalRecordRepository.findByFirstNameEqualsAndLastNameEquals(person.getFirstName(), person.getLastName())).willReturn(medicalRecord);
 
         List<FireAlertDTO> fireAlertDTOList = fireAlertService.getFireStationAndPersonsByAddress("123 Donald Avenue");
 

@@ -1,5 +1,6 @@
 package net.safetynet.alerts.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,7 @@ import net.safetynet.alerts.entity.MedicalRecord;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(value = { "medicalRecord" })
 public class FireAlertDTO {
     private String lastName;
     private String phone;
